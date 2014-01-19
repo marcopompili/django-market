@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{% load market_tags %}
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <h1>Just an example</h1>
+    <ul>
+    {% for category in categories %}
+        <li>{{ category|multititle }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

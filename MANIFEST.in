@@ -1,0 +1,7 @@
+include LICENSE
+include README.rst
+include README.md
+recursive-include django_market/static *
+recursive-include django_market/templates *
+recursive-include django_market/includes *
+recursive-include docs *

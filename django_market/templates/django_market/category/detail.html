@@ -1,0 +1,25 @@
+{% extends "django_market/base.html" %}
+
+{% load staticfiles market_tags %}
+
+{% block title %}{{category|multititle}}{% endblock %}
+
+{% block content %}
+<section id="market">
+    <div class="container">
+        {% breadcrumbs category %}
+        <div class="category">
+            <h1>{{category|multititle}}</h1>
+            {% if category.description %}
+                <p>{{category.description|safe}}</p>
+            {% endif %}
+        </div>
+        <hr/>
+        {% if category.is_leaf_node %}
+            {% include "django_market/category/includes/leaf.html" %}
+        {% else %}
+            {% include "django_market/category/includes/branch.html" %}
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

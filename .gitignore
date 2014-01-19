@@ -1,4 +1,13 @@
 *.log
 *.pot
 *.pyc
+
 local_settings.py
+
+.project
+.pydevproject
+.settings
+.idea
+
+dist
+django_market.egg-info

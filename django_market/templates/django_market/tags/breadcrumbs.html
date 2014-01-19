@@ -1,0 +1,15 @@
+{% load url from future %}
+
+{% load market_tags %}
+
+{% if ancestors %}
+    <ul class="breadcrumb">
+       {% for ancestor in ancestors %}
+        <li>
+            <a href="{% url 'category' ancestor.slug %}">
+                {{ancestor|multititle}}
+            </a>
+        </li>
+       {% endfor %}
+    </ul>
+{% endif %}

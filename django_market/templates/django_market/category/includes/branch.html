@@ -1,0 +1,38 @@
+{% load staticfiles thumbnail market_tags %}
+{% load url from future %}
+
+{% for subcategory in category.get_children|order_by_weight %}
+	{% if forloop.counter0|divisibleby:"3" %}
+		<div class="row">
+	{% endif %}
+	<div class="subcategory col-xs-6 col-md-4">
+		<h4>
+			<a href="{% url 'category' subcategory.slug %}">
+				{% if subcategory.name %}
+					{{ subcategory.name }}
+				{% else %}
+					{{ subcategory.codename }}
+				{% endif %}
+			</a>
+		</h4>
+		{% with subcategory.cover.gallery.image_set.all|first as image %}
+		<a class="thumbnail" href="{% url 'category' subcategory.slug %}">
+			{% if image %}
+				{% thumbnail image.src "x300" as thumb %}
+					<img alt="{{ subcategory.codename }}" src="{{ thumb.url }}"  width="{{ thumb.width }}" height="{{ thumb.height }}"/>
+				{% endthumbnail %}
+			{% else %} 
+					<img alt="{{ subcategory.codename }}" src="{% static 'img/placeholder.png' %}"/>
+			{% endif %}
+		</a>
+		{% endwith %}
+		{% if subcategory.description %}
+			<p>
+				{{ subcategory.description|truncatechars:200 }}
+			</p>
+		{% endif %}
+	</div>
+	{% if forloop.last or forloop.counter|divisibleby:"3" %}
+		</div>
+	{% endif %}
+{% endfor %}

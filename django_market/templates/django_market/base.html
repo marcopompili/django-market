@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+
+{% load market_tags %}
+
+<!-- Basic example, should be overridden on the site templates -->
+<html>
+<head>
+    <title>{{category|multititle}}</title>
+</head>
+<body>
+{% block content %}{% endblock %}
+</body>
+</html>

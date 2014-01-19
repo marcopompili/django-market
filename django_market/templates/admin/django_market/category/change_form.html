@@ -1,0 +1,29 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls admin_static admin_modify %}
+
+{% block content %}{{block.super}}
+<!-- Add codename value into the request -->
+<script type="text/javascript">
+    // django jquery library
+    var djq = django.jQuery;
+
+    function bindCodenameToPopup() {
+        djq('.dynamic-product_set').each(function () {
+            var vTextField = djq(this).find(".vTextField"),
+                    addButton = djq(this).find(".add-another");
+
+            var base_ref = addButton.attr('href') + '?id_codename=';
+
+            addButton.removeAttr('onclick');
+            addButton.click(function (e) {
+                djq(this).attr('href', base_ref + vTextField.val());
+                return showAddAnotherPopup(djq(this).get(0));
+            });
+        });
+    }
+
+    djq('.add-row').click(bindCodenameToPopup);
+
+    bindCodenameToPopup();
+</script>
+{% endblock %}

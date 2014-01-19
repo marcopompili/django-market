@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load thumbnail market_tags %}
+
+{% block title %}{{ product|multititle }}{% endblock %}
+
+{% block content %}
+<section id="market">
+	<div class="container">
+        {% breadcrumbs category %}
+		<div class="product">
+			<h1>{{ product|multititle }}</h1>
+			{% if product.gallery %}
+				{% with product.gallery.image_set.all|first as image %}
+                    {% thumbnail image.src "600" as pic %}
+					<img alt="{{ image.alt }}" src="{{ pic.url }}"/>
+                    {% endthumbnail %}
+				{% endwith %}
+			{% endif %}
+			{% if product.description %}
+				<p>
+					{{ product.description }}
+				</p>
+			{% endif %}
+		</div>
+	</div>
+</section>
+{% endblock %}

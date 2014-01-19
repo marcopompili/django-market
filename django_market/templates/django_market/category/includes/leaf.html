@@ -1,0 +1,46 @@
+{% load staticfiles thumbnail market_tags %}
+{% load url from future %}
+
+{% for product in products %}
+	{% if forloop.counter0|divisibleby:"3" %}
+		<div class="row">
+	{% endif %}
+	<div class="product col-xs-6 col-md-4">
+		{% if product.gallery %}
+				{% for image in product.gallery.image_set.all %}
+					{% if forloop.first %}
+						<a class="thumbnail" rel="gall-{{product.gallery.id}}" href="{{MEDIA_URL}}{{image.src}}" title="{{product|multititle}}">
+							{% thumbnail image.src "x350" as thumb %}
+								<img src="{{thumb.url}}" width="{{thumb.width}}" height="{{thumb.height}}"/>
+							{% endthumbnail %}
+						</a>
+					{% else %}
+						<a class="gallery hidden" rel="gall-{{product.gallery.id}}" href="{{MEDIA_URL}}{{image.src}}" title="{{product|multititle}}">
+							{% thumbnail image.src "x350" as thumb %}
+								<img src="{{thumb.url}}" width="{{thumb.width}}" height="{{thumb.height}}"/>
+							{% endthumbnail %}
+						</a>
+					{% endif %}
+				{% endfor %}
+			{% else %}
+				<span class="thumbnail">
+					<img alt="{{product.codename}}" src="{% static 'img/placeholder.png' %}"/>
+				</span>
+			{% endif %}
+			 <div class="caption">
+				<h3 class="text-center">
+	      			<a href="{% url 'product' product.id product.slug %}">
+                        {{ product|multititle }}
+	       			</a>
+	       		</h3>
+	       		{% if product.description %}
+	       			<p>
+	       				{{ product.description|truncatechars:100 }}
+	       			</p>
+	       		{% endif %}
+	   		</div>
+	{% if forloop.last or forloop.counter|divisibleby:"3" %}
+		</div>
+	{% endif %}
+	</div>
+{% endfor %}
