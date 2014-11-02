@@ -54,15 +54,21 @@ class CategoryAdmin(MPTTModelAdmin, TranslationAdmin):
     list_display = ('codename', 'parent', 'cover', 'description',)
     ordering = ['parent', 'codename']
     group_fields = True
+    actions = ['update_category']
 
     def get_actions(self, request):
-        """
-            I've removed the delete action for now, to avoid a bug of django-mptt.
-        """
+        # TODO, FIX: I've removed the delete action for now, to avoid a bug of django-mptt.
         actions = super(CategoryAdmin, self).get_actions(request)
         if 'delete_selected' in actions:
             del actions['delete_selected']
+
         return actions
+
+    def update_category(self, request, queryset):
+        for category in queryset:
+            category.save()
+
+    update_category.short_description = _("Resave the selected categories (Dev)")
 
     def get_form(self, request, obj=None, **kwargs):
         # TODO, FIX: _do_get_form_or_formset not present in django-modeltranslation >= 0.8
