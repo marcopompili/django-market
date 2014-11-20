@@ -7,6 +7,7 @@ Created on 12/mag/2013
 from django.db import models
 from django.conf import settings
 from django.template.defaultfilters import slugify
+from django.templatetags.i18n import language_name
 from django.utils.translation import ugettext_lazy as _
 
 from mptt.models import MPTTModel, TreeForeignKey
@@ -14,6 +15,18 @@ from mptt.models import MPTTModel, TreeForeignKey
 from django_galleries.models import Gallery
 
 __max_url_length__ = 1024
+
+
+def is_translatable(model, lang_code):
+    return hasattr(model, 'slug_%s' % lang_code) and hasattr(model, 'name_%s' % lang_code)
+
+
+def translate_slug(model, lang_code):
+    return slugify(getattr(model, 'name_%s' % lang_code, u""))
+
+
+def set_translation(model, lang_code, url_i18n):
+    setattr(model, 'slug_%s' % lang_code, url_i18n)
 
 
 class Category(MPTTModel):
@@ -60,15 +73,23 @@ class Category(MPTTModel):
         """
             Weird stuff for making URL (slugs) based on languages
         """
-        for lang_code, lang_verbose in settings.LANGUAGES:
-            # Holy list comprehension
-            ancestors = [
-                slugify(getattr(ancestor, 'name_%s' % lang_code, u""))
-                for ancestor in self.get_ancestors(include_self=True)
-                if hasattr(ancestor, 'slug_%s' % lang_code) and hasattr(ancestor, 'name_%s' % lang_code)
-            ]
 
-            setattr(self, 'slug_%s' % lang_code, '/'.join(ancestors))
+        # checking if is root_node because get_ancestors(include_self=True)
+        # doesn't work with a model that has still to be saved.
+        # The get_ancestors method will return None.
+        if self.is_root_node():
+            for lang_code, lang_name in settings.LANGUAGES:
+                if is_translatable(self, lang_code):
+                    set_translation(self, lang_code, translate_slug(self, lang_code))
+        else:
+            for lang_code in settings.LANGUAGES:
+                ancestors = [
+                    translate_slug(ancestor, lang_code)
+                    for ancestor in self.get_ancestors(include_self=True)
+                    if is_translatable(ancestor, lang_code)
+                ]
+
+                set_translation(self, lang_code, '/'.join(ancestors))
 
         super(Category, self).save(*args, **kwargs)
 
