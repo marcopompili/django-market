@@ -88,7 +88,7 @@ class CategoryAdmin(MPTTModelAdmin, TranslationAdmin):
         # Quite dirty way for making the name_* translations mandatory, buy hey...
         for key, field in self.form.base_fields.items():
             if key.startswith("name_"):
-                field.required = True
+                form.base_fields[key].required = True
 
         return form
 
