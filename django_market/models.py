@@ -77,19 +77,31 @@ class Category(MPTTModel):
         # checking if is root_node because get_ancestors(include_self=True)
         # doesn't work with a model that has still to be saved.
         # The get_ancestors method will return None.
+
         if self.is_root_node():
             for lang_code, lang_name in settings.LANGUAGES:
                 if is_translatable(self, lang_code):
                     set_translation(self, lang_code, translate_slug(self, lang_code))
+
+        # building path from the parent
+        # because the ancestors are defined
+        # in the parent category
         else:
-            for lang_code in settings.LANGUAGES:
-                ancestors = [
+            parent = self.parent
+
+            for lang_code, lang_name in settings.LANGUAGES:
+
+                # Building path from the parent
+                path = [
                     translate_slug(ancestor, lang_code)
-                    for ancestor in self.get_ancestors(include_self=True)
+                    for ancestor in parent.get_ancestors(include_self=True)
                     if is_translatable(ancestor, lang_code)
                 ]
 
-                set_translation(self, lang_code, '/'.join(ancestors))
+                # Adding the current object to path
+                path.append(translate_slug(self, lang_code))
+
+                set_translation(self, lang_code, '/'.join(path))
 
         super(Category, self).save(*args, **kwargs)
 
